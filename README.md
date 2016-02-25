@@ -8,7 +8,7 @@ I love Vim. I've been using it for over a year now, and I know that still have m
 
 Learning Vim takes time, and at first, it can be [frustrating](http://qr.ae/ROi9Vd), but I promise after exploring and experimenting with Vim, it'll be worth your time.
 
-This is my vimrc file. Although I don't recommend straight up copying it (as it's built for my workflow), but do take a look and see what plugins and mappings might benefit you. If you know of anything interesting that I should add, let me know. 
+This is my vimrc file. I don't recommend straight up copying it (as it's built for my workflow), but I'd suggest reading [this post](https://melinysh.me/vim,/development,/commandline/2016/02/18/what-makes-a-vimrc.html) I wrote about the basics of a good vimrc. If you know of anything interesting that I should add, let me know. 
 
 
 
