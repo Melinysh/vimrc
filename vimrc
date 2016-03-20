@@ -6,7 +6,7 @@
 
 " Required {{{
 set nocompatible              " be iMproved, required
-filetype on                  " required`
+filetype on                  " required
 filetype plugin on
 " Set utf8 as standard encoding and en_US as the standard language
 set encoding=utf-8
@@ -27,22 +27,30 @@ au BufRead *.txt,*.md setlocal spell
 "}}}
 "{{{ Functions 
 function SetupDevEnvironment()
-"	if !empty(glob("./Makefile")) || !empty(glob(".ycm_extra_conf.py"))
-"		echom "It appears that your dev environment is already setup."
-"		return
-"	endif
+	if !empty(glob("./Makefile")) && !empty(glob(".ycm_extra_conf.py"))
+		echom "It appears that your dev environment is already setup."
+		return
+	endif
 	silent write
-	silent !pymake
+	silent !pymake 
 	silent YcmGenerateConfig 
 	silent YcmRestartServer
 	redraw!
 	echom "Developer environment created!"
 endfunction
+
+function Grip() 
+	silent ! (grip -b --quiet --wide % > /dev/null 2>&1) &
+	redraw!
+endfunction 
+
+function EndGrip()
+	silent ! kill $(ps aux | grep -v  grep | grep grip | awk '{print $2}')
+	redraw!
+endfunction 
 "}}}
 " Leader and Mappings {{{
 	let mapleader = "\<Space>"
-	"" Space o opens a new file
-""	nnoremap <Leader>o :CtrlP<CR>
 	"" Space-w save file
 	"" Space-s enable spell checking on current buffer
 	nnoremap <Leader>sp :setlocal spell spelllang=en_ca<CR> 
@@ -51,24 +59,41 @@ endfunction
 	nnoremap <Leader>nsp :set nospell<CR>
 	nnoremap <Leader>nh :noh <CR>
 	"fugitive git stuff
-	nnoremap <Leader>gl :!git lg<CR>
-	nnoremap <Leader>gc :Gcommit<CR>
-	nnoremap <Leader>gd :Gdiff<CR>
-	nnoremap <Leader>gb :Gblame<CR>
-	nnoremap <Leader>gs :Gstatus<CR>
+	nnoremap <Leader>Gl :!git lg<CR>
+	nnoremap <Leader>Gc :Gcommit<CR>
+	nnoremap <Leader>Gdf :Gdiff<CR>
+	nnoremap <Leader>Gb :Gblame<CR>
+	nnoremap <Leader>Gs :Gstatus<CR>
+	"Tagbar class outline view
+	nnoremap <Leader>tt :TagbarToggle <CR>
 	" YCM
 	nnoremap <Leader>ydd :YcmShowDetailedDiagnostic<CR>
 	nnoremap <Leader>f :YcmCompleter FixIt <CR>
-	nnoremap <Leader>d :YcmCompleter GetDoc <CR>
-	nnoremap <Leader>t :YcmCompleter GetType <CR>
+"	nnoremap <Leader>d :YcmCompleter GetDoc <CR>
+"	nnoremap <Leader>t :YcmCompleter GetType <CR>
 	" Makefiles and dev environment 
 	nnoremap <Leader>mk :!Make<CR>
 	nnoremap <Leader>mr :!Make && ./a.out<CR>
 	nnoremap <Leader>mc :!Make clean <CR>
 	nnoremap <Leader>pm :!pymake<CR>
 	nnoremap <Leader>sd :call SetupDevEnvironment() <CR>
+	" Golang stuff
+	au FileType go nmap <leader>gr <Plug>(go-run)
+	au FileType go nmap <leader>gb <Plug>(go-build)
+	au FileType go nmap <leader>gt <Plug>(go-test)
+	au FileType go nmap <leader>gc <Plug>(go-coverage)
+	au FileType go nmap <Leader>ds <Plug>(go-def-split)
+	au FileType go nmap <Leader>dv <Plug>(go-def-vertical)
+	au FileType go nmap <Leader>dt <Plug>(go-def-tab)
+	au FileType go nmap <Leader>gd <Plug>(go-doc)
+	au FileType go nmap <Leader>gv <Plug>(go-doc-vertical)
+	au FileType go nmap <Leader>s <Plug>(go-implements)
+	au FileType go nmap <Leader>gi <Plug>(go-info)
 	" Fun stuffs
 	nnoremap <Leader>sh :shell <CR>
+	nnoremap <Leader>gp :call Grip() <CR>
+	nnoremap <Leader>ngp :call EndGrip() <CR>
+	nnoremap <Leader>cb :bd <CR>
 " }}}
 " Color Scheme {{{
 let g:molokai_original = 1
@@ -83,12 +108,6 @@ set foldlevel=0
 set modelines=1
 "}}}
  " Movement {{{
-" " Smart way to move between windows
-map <C-j> <C-W>j
-map <C-k> <C-W>k
-map <C-h> <C-W>h
-map <C-l> <C-W>l
-
 " Buffers
 map <Tab> :bnext<CR>
 map <S-Tab> :bprevious<CR>
@@ -118,10 +137,6 @@ nnoremap <Leader>gdb :ConqueGdb a.out<CR>
 
 Plugin 'rizzatti/dash.vim'
 nmap <silent> <Leader>l <Plug>DashSearch
-"Plugin 'gilligan/vim-lldb'
-"Plugin 'Shougo/vimproc.vim'
-"Plugin 'idanarye/vim-vebugger'
-"map <Leader>gdb :VBGstartGDB<CR> 
 " }}}
 " Status Bar {{{
 Plugin 'bling/vim-airline'
@@ -136,6 +151,7 @@ let g:airline#extensions#branch#empty_message = ''
 let g:airline#extensions#branch#format = 0
 let g:airline#extensions#syntastic#enabled = 1
 let g:airline#extensions#tagbar#enabled = 1
+let g:airline#extensions#tagbar#flags = 'f'
 let g:airline#extensions#hunks#enabled = 1
 let g:airline#extensions#hunks#non_zero_only = 0
 let g:airline#extensions#hunks#hunk_symbols = ['+', '~', '-']
@@ -146,10 +162,6 @@ let g:airline#extensions#whitespace#max_lines = 20000
 let g:airline#extensions#whitespace#show_message = 1
 let g:airline#extensions#whitespace#trailing_format = 'trailing[%s]'
 let g:airline#extensions#whitespace#mixed_indent_format = 'mixed-indent[%s]'
-let g:airline#extensions#tabline#enabled = 1
-let g:airline#extensions#tabline#show_tabs = 1
-let g:airline#extensions#tabline#show_close_button = 1
-let g:airline#extensions#tabline#close_symbol = 'X'
 let g:airline#extensions#ctrlspace#enabled = 1
 set ttimeoutlen=50 " fix pause after leaving insert mode
 
@@ -161,6 +173,9 @@ set showcmd
 "}}}
 "{{{ Source Control
 Plugin 'tpope/vim-fugitive'
+"}}}
+"{{{ Visuals/Windows/Viewers
+Plugin 'majutsushi/tagbar'
 "}}}
 " Search {{{
 set incsearch           " search as characters are entered
@@ -201,10 +216,12 @@ let g:syntastic_always_populate_loc_list = 1
 let g:syntastic_auto_loc_list = 1
 let g:syntastic_check_on_open = 0
 let g:syntastic_check_on_wq = 0
+let g:syntastic_go_checkers = ['golint', 'govet', 'errcheck']
+let g:syntastic_mode_map = { 'mode': 'active', 'passive_filetypes': ['go'] }
 syntax on " enables syntax highlighting
 set ignorecase " Ignore case when searching
 set smartcase " When searching try to be smart about cases 
-set wildignore=*.o,*~,*.pyc
+set wildignore=*.o,*~,*.pyc,*.out
 set magic " For regular expressions turn magic on
 set showmatch " Show matching brackets when text indicator is over them
 
@@ -228,23 +245,15 @@ au BufRead,BufNewFile *.swift set filetype=swift
   endif
 set autoindent
 "}}}
-" Arduino {{{
-"Plugin 'jplaut/vim-arduino-ino'
-"au BufRead,BufNewFile *.pde set filetype=ardiuno 
-"au BufRead,BufNewFile *.ino set filetype=arduino
-"let g:vim_arduino_auto_open_serial = 1 "Open serial monitor after every deploy
-" }}}
 " Golang {{{
 Plugin 'fatih/vim-go'
 au BufRead,BufNewFile *.go set filetype=go                                                                                                       
 let g:go_fmt_fail_silently = 1
-let g:go_highlight_functions = 1                                                                                                                 
-let g:go_highlight_methods = 1                                                                                                                   
-let g:go_highlight_structs = 1                                                                                                                   
-let g:go_highlight_operators = 1                                                                                        
+let g:go_highlight_functions = 1                                                            
+let g:go_highlight_methods = 1 
+let g:go_highlight_structs = 1 
+let g:go_highlight_operators = 1  
 let g:go_highlight_build_constraints = 1   
-nnoremap <Leader>gt :GoTest<CR>
-nnoremap <Leader>gr :GoRun<CR>
 " }}}
 " Directory {{{
 Plugin 'scrooloose/nerdtree'
@@ -254,8 +263,6 @@ autocmd StdinReadPre * let s:std_in=1 " These two open NERDTree on start if no f
 autocmd VimEnter * if argc() == 0 && !exists("s:std_in") | NERDTree | endif
 " Toggle NERDTree on and off
 map <C-n> :NERDTreeToggle <cr> 
-" Auto switch to file instead of NERDTree                                                                                                        
-"autocmd VimEnter * wincmd w  
 "}}}
 " Wrap Up {{{
 " All of your Plugins must be added before the following line
