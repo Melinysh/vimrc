@@ -13,6 +13,9 @@ set encoding=utf-8
 
 " " Use Unix as the standard file type
 set ffs=unix,dos,mac
+
+"autocmd! " Remove ALL autocommands for the current group. (Prevents double loading)
+
 " }}}
 " Backup {{{
 set backup
@@ -40,8 +43,7 @@ function SetupDevEnvironment()
 endfunction
 
 function Grip() 
-	silent ! (grip -b --quiet --wide % > /dev/null 2>&1) &
-	redraw!
+	DoQuietly grip -b --quiet --wide % 
 endfunction 
 
 function EndGrip()
@@ -176,6 +178,9 @@ Plugin 'tpope/vim-fugitive'
 "}}}
 "{{{ Visuals/Windows/Viewers
 Plugin 'majutsushi/tagbar'
+
+Plugin 'joonty/vim-do.git'
+
 "}}}
 " Search {{{
 set incsearch           " search as characters are entered
@@ -214,10 +219,9 @@ set statusline+=%{SyntasticStatuslineFlag()}
 set statusline+=%*
 let g:syntastic_always_populate_loc_list = 1
 let g:syntastic_auto_loc_list = 1
-let g:syntastic_check_on_open = 0
+let g:syntastic_check_on_open = 1
 let g:syntastic_check_on_wq = 0
-let g:syntastic_go_checkers = ['golint', 'govet', 'errcheck']
-let g:syntastic_mode_map = { 'mode': 'active', 'passive_filetypes': ['go'] }
+"let g:syntastic_mode_map = { 'mode': 'active', 'passive_filetypes': ['go'] }
 syntax on " enables syntax highlighting
 set ignorecase " Ignore case when searching
 set smartcase " When searching try to be smart about cases 
@@ -248,12 +252,10 @@ set autoindent
 " Golang {{{
 Plugin 'fatih/vim-go'
 au BufRead,BufNewFile *.go set filetype=go                                                                                                       
-let g:go_fmt_fail_silently = 1
-let g:go_highlight_functions = 1                                                            
-let g:go_highlight_methods = 1 
-let g:go_highlight_structs = 1 
-let g:go_highlight_operators = 1  
-let g:go_highlight_build_constraints = 1   
+
+let g:go_fmt_command = "goimports"
+Plugin 'garyburd/go-explorer'
+
 " }}}
 " Directory {{{
 Plugin 'scrooloose/nerdtree'
