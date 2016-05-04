@@ -44,6 +44,7 @@ endfunction
 
 function Grip() 
 	DoQuietly grip -b --quiet --wide % 
+	autocmd VimLeavePre * call EndGrip()  " end grip when exiting
 endfunction 
 
 function EndGrip()
@@ -239,9 +240,6 @@ set smarttab
 set shiftwidth=4
 set tabstop=4
 
-" Swift Lang
-au BufRead,BufNewFile *.swift set filetype=swift                                                                                                       
-
 " Use english for spellchecking, but don't spellcheck by default
  if version >= 700
 	set spl=en spell
@@ -251,7 +249,6 @@ set autoindent
 "}}}
 " Golang {{{
 Plugin 'fatih/vim-go'
-au BufRead,BufNewFile *.go set filetype=go                                                                                                       
 
 let g:go_fmt_command = "goimports"
 Plugin 'garyburd/go-explorer'
